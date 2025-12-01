@@ -1,0 +1,52 @@
+name: vondel
+
+services:
+  backend:
+    container_name: vondel-backend
+    build:
+      context: ./vondel-backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./vondel-backend:/app
+      - /app/node_modules
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USER: dev
+      DATABASE_PASSWORD: devpassword
+      DATABASE_NAME: vondel
+    depends_on:
+      - db
+
+  frontend:
+    container_name: vondel-frontend
+    build:
+      context: ./vondel-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8100:8100"
+    volumes:
+      - ./vondel-frontend:/app
+      - /app/node_modules
+    tty: true
+    stdin_open: true
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:latest
+    container_name: vondel-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: vondel
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
