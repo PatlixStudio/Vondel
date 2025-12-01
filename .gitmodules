@@ -1,0 +1,6 @@
+[submodule "vondel-backend"]
+    path = vondel-backend
+    url = https://github.com/PatlixStudio/vondel-backend.git
+[submodule "vondel-frontend"]
+    path = vondel-frontend
+    url = https://github.com/PatlixStudio/vondel-frontend.git
