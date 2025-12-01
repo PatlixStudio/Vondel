@@ -36,6 +36,8 @@ git submodule update --init --recursive
 
 ## 3. Run the development environment
 ```bash
+export MY_UID=$(id -u)
+export MY_GID=$(id -g)
 docker compose up --build
 ```
 

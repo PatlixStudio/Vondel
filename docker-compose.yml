@@ -8,15 +8,14 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - ./vondel-backend:/app
-      - /app/node_modules
+    env_file:
+      - ./vondel-backend/environments/.env.docker
     environment:
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-      DATABASE_USER: dev
-      DATABASE_PASSWORD: devpassword
-      DATABASE_NAME: vondel
+      DOCKER: "true"
+    user: "${MY_UID}:${MY_GID}"
+    volumes:
+      - ./vondel-backend:/app:cached    # mount host code for hot-reload
+      - /app/node_modules               # keep container node_modules intact
     depends_on:
       - db
 
@@ -29,7 +28,7 @@ services:
       - "8100:8100"
     volumes:
       - ./vondel-frontend:/app
-      - /app/node_modules
+      - backend_node_modules:/app/node_modules
     tty: true
     stdin_open: true
     depends_on:
@@ -44,9 +43,22 @@ services:
       POSTGRES_PASSWORD: devpassword
       POSTGRES_DB: vondel
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: vondel-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@vondel.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
 volumes:
   postgres_data:
+  backend_node_modules:
